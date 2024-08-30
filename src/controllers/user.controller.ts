@@ -27,6 +27,43 @@ const UserController = {
         }
     },
 
+    postUser: (req: Request, res: Response): void => {
+        const { email, username, pwd, role } = req.body;
+        log(email, username, pwd, role)
+        if (email != undefined && username != undefined && pwd != undefined && role != undefined) {
+            UserService.postUser(email, username, pwd, role);
+            res.status(200).send(
+                { "message": "Create succed!" }
+            )
+        } else {
+            res.status(500).send(
+                { "message": "Create failed!" }
+            )
+        }
+    },
+
+    updateUser: (req: Request, res: Response): void => {
+        const id: string = req.params.id;
+        const { email, username, pwd, role} = req.body;
+        if (id != undefined) {
+            UserService.updateUser(id, email, username, pwd, role);
+            res.status(200).send({ "message": "Update succed!" })
+        } else {
+            res.status(500).send({ "message": "Update failed!" })
+        }
+    },
+
+    deleteUserById: (req: Request, res: Response): void => {
+        const id: string = req.params.id;
+        log(id)
+        if (id != undefined) {
+            UserService.deleteUser(id);
+            res.status(200).send({ "message": "Delete succed!" })
+        } else {
+            res.status(500).send({ "message": "Delete failed!" })
+        }
+    },
+
     getUsersByPage: async (req: Request, res: Response): Promise<void> => {
         const currentPage: number = Number(req.query.page) || 1;
         const pageSize: number = Number(req.query.pageSize) || 5;

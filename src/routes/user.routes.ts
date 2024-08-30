@@ -16,8 +16,16 @@ router.get('/users/:id', (req: Request, res: Response) => {
 })
 
 
-// router.post('/users', (req: Request, res: Response) => {
-//     // UserController.po
-// })
+router.post('/users', (req: Request, res: Response) => {
+    UserController.postUser(req, res);
+})
+
+router.put('/books/(:id)', (req: Request, res: Response) => {
+    UserController.updateUser(req, res);
+})
+
+router.delete('/books/(:id)', (req: Request, res: Response) => {
+    UserController.deleteUserById(req, res);
+})
 
 export default router;
