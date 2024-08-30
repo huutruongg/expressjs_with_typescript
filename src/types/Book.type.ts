@@ -1,8 +1,8 @@
 export type BookType = {
-    id: number;
-    name: string;
+    id: string;
+    book_name: string;
     author: string;
-    year: number
+    year_wrote: number
 }
 
 export type BooksType = BookType[]
