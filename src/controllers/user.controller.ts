@@ -44,7 +44,8 @@ const UserController = {
 
     updateUser: (req: Request, res: Response): void => {
         const id: string = req.params.id;
-        const { email, username, pwd, role} = req.body;
+        const { email, username, pwd, role } = req.body;
+        log(email, username, pwd, role)
         if (id != undefined) {
             UserService.updateUser(id, email, username, pwd, role);
             res.status(200).send({ "message": "Update succed!" })

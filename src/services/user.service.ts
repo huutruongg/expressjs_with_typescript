@@ -1,5 +1,5 @@
 import { PrismaClient, user } from '@prisma/client'
-import { UsersType, UserType } from '../types/User.type'
+import { UsersType, UserType } from '../types/User'
 import { v4 as uuidv4 } from 'uuid';
 
 const prisma = new PrismaClient()
@@ -22,9 +22,8 @@ const UserService = {
         return User;
     },
 
-    postUser: async (email: string, username: string, pwd: string, r: Boolean): Promise<void> => {
+    postUser: async (email: string, username: string, pwd: string, role: string): Promise<void> => {
         const id: string = uuidv4();
-        const role: string = r ? "user" : "admin";
         await prisma.user.create({
             data: {
                 id,
@@ -36,8 +35,7 @@ const UserService = {
         });
     },
 
-    updateUser: async (id: string, email: string, username: string, pwd: string, r: Boolean): Promise<void> => {
-        const role: string = r ? "user" : "admin";
+    updateUser: async (id: string, email: string, username: string, pwd: string, role: string): Promise<void> => {
         await prisma.user.update({
             where: { id: id },
             data: {
