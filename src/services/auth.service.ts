@@ -1,7 +1,7 @@
-import { PrismaClient, book } from '@prisma/client'
-import { BooksType, BookType } from '../types/Book'
-import { v4 as uuidv4 } from 'uuid';
-import { AuthUserType, UserType } from '../types/User';
+import jwt from 'jsonwebtoken';
+import bcrypt from "bcrypt";
+import { PrismaClient } from '@prisma/client'
+import { AuthUserType } from '../types/User';
 
 const prisma = new PrismaClient()
 
@@ -19,8 +19,17 @@ const AuthService = {
 
     },
 
-    checkPassword: (pwdResquest: string, pwdUser: string): boolean => {
-        return pwdResquest === pwdUser ? true : false;
+    checkPassword: async (pwdRequest: string, hashedPwd: string): Promise<boolean> => {
+        try {
+            return await bcrypt.compare(pwdRequest, hashedPwd);
+        } catch (error) {
+            return false;
+        }
+    },
+
+    generateToken: (userId: string, email: string, role: string) => {
+        const payload = { userId, role };
+        return jwt.sign(payload, process.env.SECRET_KEY as string, { expiresIn: '1h' });
     }
 }
 

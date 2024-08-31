@@ -1,11 +1,9 @@
-import express, { Application, Request, Response } from 'express';
+import express, { Application} from 'express';
 import bookRouter from './routes/book.routes';
 import userRouter from './routes/user.routes'
 import authRouter from './routes/auth.routes'
 
 import { log } from 'console';
-
-
 
 const app: Application = express()
 const port: number = Number(process.env.PORT) | 3030;

@@ -1,8 +1,10 @@
 import { AuthUserType } from '../types/User';
 import { Response, Request, NextFunction } from "express"
 import AuthService from "../services/auth.service";
-import jwt from "jsonwebtoken"
 import dotenv from 'dotenv';
+import UserService from '../services/user.service';
+import { log } from 'console';
+import UserRole from '../types/UserRole';
 
 dotenv.config();
 
@@ -21,30 +23,26 @@ const AuthController = {
                 return;
             }
 
+            const isValidPasswod = await AuthService.checkPassword(password, existingUser.pwd);
+            log("Check role: ", existingUser.role)
             // Check password
-            if (!AuthService.checkPassword(existingUser.pwd, password)) {
+            if (!isValidPasswod) {
                 res.status(401).json({ message: "Invalid credentials!" });
                 return;
+            } else {
+                // Generate JWT token
+                const token = AuthService.generateToken(existingUser.id as string, existingUser.email, existingUser.role);
+
+                res.status(200).json({
+                    success: true,
+                    data: {
+                        userId: existingUser.id,
+                        email: existingUser.email,
+                        role: existingUser.role,
+                        token: token,
+                    },
+                });
             }
-
-            // Generate JWT token
-            const token = jwt.sign(
-                {
-                    userId: existingUser.id,
-                    email: existingUser.email
-                },
-                process.env.SECRET_KEY as string, 
-                { expiresIn: "1h" }
-            );
-
-            res.status(200).json({
-                success: true,
-                data: {
-                    userId: existingUser.id,
-                    email: existingUser.email,
-                    token: token,
-                },
-            });
 
         } catch (err) {
             console.error(err);
@@ -52,10 +50,33 @@ const AuthController = {
         }
     },
 
-    signup: (req: Request, res: Response, next: NextFunction): void => {
+    signup: async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+        const { email, username, password } = req.body;
+        try {
+            // Check if the user exists
+            const existingUser: AuthUserType | null = await AuthService.getUserByEmail(email);
+            if (existingUser) {
+                res.status(401).json({ message: "This email has existing! Please entered other email." });
+                return;
+            }
+            const newUser = await UserService.postUser(email, username, password);
+            // Generate JWT token
+            const token = AuthService.generateToken(newUser.id, newUser.email, newUser.role as UserRole)
+            // Send response
+            res.status(200).json({
+                success: true,
+                data: {
+                    userId: newUser.id,
+                    email: newUser.email,
+                    token: token
+                },
+            });
 
+        } catch (err) {
+            console.error(err);
+            return next(new Error("Error! Something went wrong."));
+        }
     }
 }
-
 
 export default AuthController;

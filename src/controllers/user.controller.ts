@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import UserService from "../services/user.service";
 import { log } from "console";
+import { CustomRequest } from "../types/Custom";
 
 
 const UserController = {
@@ -28,10 +29,10 @@ const UserController = {
     },
 
     postUser: (req: Request, res: Response): void => {
-        const { email, username, pwd, role } = req.body;
-        log(email, username, pwd, role)
-        if (email != undefined && username != undefined && pwd != undefined && role != undefined) {
-            UserService.postUser(email, username, pwd, role);
+        const { email, username, pwd } = req.body;
+        log(email, username, pwd)
+        if (email != undefined && username != undefined && pwd != undefined) {
+            UserService.postUser(email, username, pwd);
             res.status(200).send(
                 { "message": "Create succed!" }
             )
@@ -51,6 +52,31 @@ const UserController = {
             res.status(200).send({ "message": "Update succed!" })
         } else {
             res.status(500).send({ "message": "Update failed!" })
+        }
+    },
+
+    updateProfile: async (req: Request, res: Response): Promise<void> => {
+        const loggedInUserId: string |undefined = (req as CustomRequest).userData.userId;
+
+        // Unallow to update the other profile
+        if (req.params.id && req.params.id !== loggedInUserId) {
+            res.status(403).json({ message: "Forbidden: You are not allowed to update this profile!" });
+            return;
+        }
+
+        // Unallow to update the role
+        if (req.body.role !== undefined) {
+            res.status(403).json({ message: "Forbidden: You are not allowed to update role!" });
+        }
+
+        const { email, username, pwd } = req.body;
+
+        try {
+            await UserService.updateProfile(String(loggedInUserId), email, username, pwd);
+            res.status(200).json({ message: "Update profile successful!" });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ message: "Update profile failed!" });
         }
     },
 

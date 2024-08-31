@@ -1,5 +1,11 @@
-import { Request } from "express"
+// types/Custom.ts
+import { Request } from "express";
+import UserRole from "./UserRole";
 
-interface CustomRequest extends Request {
-    userData: UserDataType;
+export interface CustomRequest extends Request {
+    userData: {
+        userId: string;
+        email: string
+        role: UserRole;
+    };
 }

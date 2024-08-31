@@ -1,4 +1,5 @@
 import { Request } from "express";
+import UserRole from "./UserRole";
 
 export type UserType = {
     id: string,
@@ -17,4 +18,5 @@ export type AuthUserType = UserType & {
 export type UserDataType = {
     userId: string;
     email: string;
+    role: UserRole;
 };

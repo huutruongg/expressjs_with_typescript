@@ -11,4 +11,5 @@ router.post('/login', (req: Request, res: Response, next: NextFunction) => {
     AuthController.login(req, res, next);
 })
 
+
 export default router;

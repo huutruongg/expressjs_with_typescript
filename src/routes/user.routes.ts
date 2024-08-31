@@ -1,10 +1,12 @@
-import { Router, Request, Response } from "express";
+import { Router, Request, Response, NextFunction } from "express";
 import UserController from "../controllers/user.controller";
-import authMidldeware from "../middlewares/authMiddleware";
+import authenticate from "../middlewares/authenticateMiddleware";
+import authorize from "../middlewares/authorizeMiddleware";
+import UserRole from "../types/UserRole";
 
 const router = Router();
 
-router.get('/users', authMidldeware, (req: Request, res: Response) => {
+router.get('/users', authenticate, authorize(UserRole.ADMIN), (req: Request, res: Response) => {
     if (req.query.page || req.query.pageSize) {
         UserController.getUsersByPage(req, res);
     } else {
@@ -12,20 +14,26 @@ router.get('/users', authMidldeware, (req: Request, res: Response) => {
     }
 })
 
-router.get('/users/:id', authMidldeware, (req: Request, res: Response) => {
+router.get('/users/:id', authenticate, authorize(UserRole.ADMIN), (req: Request, res: Response) => {
     UserController.getUserById(req, res);
 })
 
 
-router.post('/users', authMidldeware, (req: Request, res: Response) => {
+router.post('/users', (req: Request, res: Response) => {
     UserController.postUser(req, res);
 })
 
-router.put('/users/(:id)', authMidldeware, (req: Request, res: Response) => {
+
+router.put('/admin/update_info/(:id)', authenticate, authorize(UserRole.ADMIN), (req: Request, res: Response) => {
     UserController.updateUser(req, res);
 })
 
-router.delete('/users/(:id)', authMidldeware, (req: Request, res: Response) => {
+router.put('/user/update_profile/(:id)', authenticate, authorize(UserRole.USER), (req: Request, res: Response) => {
+    UserController.updateProfile(req, res);
+})
+
+
+router.delete('/users/(:id)', authenticate, authorize(UserRole.ADMIN), (req: Request, res: Response) => {
     UserController.deleteUserById(req, res);
 })
 
