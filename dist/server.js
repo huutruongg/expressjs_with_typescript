@@ -17,3 +17,4 @@ app.use('/api/', user_routes_1.default);
 app.listen(port, () => {
     (0, console_1.log)(`Server listening in http://localhost:${port}`);
 });
+exports.default = app;
