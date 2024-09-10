@@ -3,6 +3,7 @@ import UserController from "../controllers/user.controller";
 import authenticate from "../middlewares/authenticateMiddleware";
 import authorize from "../middlewares/authorizeMiddleware";
 import UserRole from "../types/UserRole";
+import { log } from "console";
 
 const router = Router();
 
@@ -36,6 +37,17 @@ router.put('/user/update_profile/(:id)', authenticate, authorize(UserRole.USER),
 router.delete('/users/(:id)', authenticate, authorize(UserRole.ADMIN), (req: Request, res: Response) => {
     UserController.deleteUserById(req, res);
 })
+
+router.get('/old-url', (req: Request, res: Response) => {
+    setTimeout(() => {
+        log("HAHA");
+        res.redirect('/api/new-url');  
+    }, 3000);
+});
+
+router.get('/new-url', (req: Request, res: Response) => {
+    res.json("Success!");
+});
 
 
 export default router;

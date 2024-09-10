@@ -6,7 +6,7 @@ import UserRole from "../types/UserRole"
 
 const router = Router();
 
-router.get('/books', authenticate, (req: Request, res: Response) => {
+router.get('/books', (req: Request, res: Response) => {
     if (req.query.page || req.query.pageSize) {
         BookController.getBooksByPage(req, res);
     } else {
@@ -14,7 +14,7 @@ router.get('/books', authenticate, (req: Request, res: Response) => {
     }
 })
 
-router.get('/books/(:id)', authenticate, (req: Request, res: Response) => {
+router.get('/books/(:id)', (req: Request, res: Response) => {
     BookController.getBookById(req, res);
 })
 
