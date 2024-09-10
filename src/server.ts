@@ -1,4 +1,4 @@
-import express, { Application} from 'express';
+import express, { Application } from 'express';
 import bookRouter from './routes/book.routes';
 import userRouter from './routes/user.routes'
 import authRouter from './routes/auth.routes'
@@ -17,3 +17,5 @@ app.use('/api/', userRouter)
 app.listen(port, () => {
   log(`Server listening in http://localhost:${port}`)
 })
+
+export default app;
